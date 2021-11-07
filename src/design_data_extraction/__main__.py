@@ -31,8 +31,6 @@ def predict(args):
     '''
     Инференс модели
     '''
-    train_df = pd.read_csv(args.data_dir / 'train.csv')
-
     df_dict = {
         column: [] for column in SUBMISSION_COLUMNS
     }
