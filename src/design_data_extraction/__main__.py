@@ -35,7 +35,7 @@ def predict(args):
         column: [] for column in SUBMISSION_COLUMNS
     }
 
-    with os.scandir(args.data_dir) as td:
+    with os.scandir(args.data_dir / 'test') as td:
         for entry in td:
             if entry.is_dir():
                 data_items = []
