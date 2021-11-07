@@ -43,13 +43,3 @@ def get_text_from_docx(file):
         print('KeyError')
         print(file.name)
     return text
-
-def get_frequent_values(df):
-    frequent_values = dict()
-    for column in df.columns:
-        frequent_values[column] = df[column] \
-            .value_counts(dropna=False) \
-            .reset_index() \
-            .iloc[0, 0]
-    return frequent_values
-
