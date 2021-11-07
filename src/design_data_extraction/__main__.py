@@ -1,37 +1,92 @@
+'''
+Модуль для извлечения исходных данных для проектирования из документов.
+'''
+
 import argparse
+import os
+import re
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from pathlib import Path
+from settings import (
+    PATTERNS,
+    SUBMISSION_COLUMNS
+)
+from utils import (
+    get_frequent_values,
+    get_data_from_docx,
+    get_text_from_docx
+)
 
-SUBMISSION_COLUMNS = [
-    'Проект', 'Куст', 'Количество добывающих скважин', 'Количество нагнетательных скважин',
-    'Вид строительства', 'Абсолютный минимум температуры', 'Абсолютный максимум температуры',
-    'Средняя температура наиболее холодной пятидневки', 'Среднемесячная температура самого холодного месяца',
-    'Район сейсмичности', 'Уровень ответственности объекта по 384-ФЗ от 30.12.2009', 'Способ добычи',
-    'Тип энергоснабжения','Вариант прокладки нефтепроводов', 'Вариант прокладки водоводов',
-    'Добыча нефти, тыс. т / год', 'Добыча жидкости, тыс. м3 / год', 'Закачка воды, тыс. м3 / год',
-    'Газовый фактор, м3 / т', 'Плотность нефти, кг / м3', 'Плотность газа, кг / м3',
-    'Тип подключения к системе ППД', 'Внутрикустовая закачка в систему ППД',
-    'Схема внешнего электроснабжения', 'Категория надежности электроснабжения',
-    'Потребляемая мощность ЭЦН / ШГН, кВт'
-]
 
 def train(args):
+    '''
+    Обучение модели
+    '''
     raise NotImplementedError('Обучение модели не реализовано')
 
 def predict(args):
-    sub = pd.DataFrame({column: np.zeros(100, dtype=np.int32) if column != 'Проект' else np.arange(100, dtype=np.int32) for column in SUBMISSION_COLUMNS})
+    '''
+    Инференс модели
+    '''
+    train_df = pd.read_csv(args.data_dir / 'train.csv')
+
+    df_dict = {
+        column: [] for column in SUBMISSION_COLUMNS
+    }
+    frequent_values = get_frequent_values(train_df)
+
+    with os.scandir(args.data_dir) as td:
+        for entry in td:
+            if entry.is_dir():
+                data_items = []
+                for document in os.scandir(entry.path):
+                    text = get_text_from_docx(document)
+                    if text is not None:
+                        for pattern in PATTERNS['Куст']:
+                            samples = re.findall(
+                                pattern=pattern,
+                                string=text.lower()
+                            )
+                            for sample in set(samples):
+                                data_items.extend(re.findall(r'\d+.\d+', sample))
+                    data_item = get_data_from_docx(document)
+                    if data_item is not None:
+                        data_items.append(data_item)
+                data_items = set(data_items)
+                if len(data_items) > 0:
+                    for bush in set(data_items):
+                        df_dict['Проект'].append(entry.name)
+                        df_dict['Куст'].append(bush)
+                        for column in SUBMISSION_COLUMNS[2:]:
+                            df_dict[column].append(frequent_values[column])
+                else:
+                    df_dict['Проект'].append(entry.name)
+                    df_dict['Куст'].append(np.NaN)
+                    for column in SUBMISSION_COLUMNS[2:]:
+                        df_dict[column].append(frequent_values[column])
+
+
+    pd.DataFrame(df_dict)
+
+
+    sub = pd.DataFrame(
+        {column: np.zeros(100, dtype=np.int32) if column != 'Проект' else np.arange(100, dtype=np.int32) for column in SUBMISSION_COLUMNS}
+    )
     sub.to_csv(args.output_dir / 'submission.csv', index=False)
 
 def main(args):
     if args.mode == 'train':
         train(args)
     elif args.mode == 'predict':
-        predict(args)    
+        predict(args)
 
 def get_args():
+    '''
+    Извлечение аргументов
+    '''
     parser = argparse.ArgumentParser(
         description='Модуль для извлечения исходных данных для проектирования из документов.'
     )
