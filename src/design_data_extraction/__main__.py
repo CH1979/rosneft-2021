@@ -11,11 +11,11 @@ import numpy as np
 import pandas as pd
 
 from .settings import (
+    MOST_FREQUENT_VALUES,
     PATTERNS,
     SUBMISSION_COLUMNS
 )
 from .utils import (
-    get_frequent_values,
     get_data_from_docx,
     get_text_from_docx
 )
@@ -36,7 +36,6 @@ def predict(args):
     df_dict = {
         column: [] for column in SUBMISSION_COLUMNS
     }
-    frequent_values = get_frequent_values(train_df)
 
     with os.scandir(args.data_dir) as td:
         for entry in td:
@@ -61,12 +60,12 @@ def predict(args):
                         df_dict['Проект'].append(entry.name)
                         df_dict['Куст'].append(bush)
                         for column in SUBMISSION_COLUMNS[2:]:
-                            df_dict[column].append(frequent_values[column])
+                            df_dict[column].append(MOST_FREQUENT_VALUES[column])
                 else:
                     df_dict['Проект'].append(entry.name)
                     df_dict['Куст'].append(np.NaN)
                     for column in SUBMISSION_COLUMNS[2:]:
-                        df_dict[column].append(frequent_values[column])
+                        df_dict[column].append(MOST_FREQUENT_VALUES[column])
 
     sub = pd.DataFrame(df_dict)
     sub.to_csv(args.output_dir / 'submission.csv', index=False)
