@@ -68,13 +68,7 @@ def predict(args):
                     for column in SUBMISSION_COLUMNS[2:]:
                         df_dict[column].append(frequent_values[column])
 
-
-    pd.DataFrame(df_dict)
-
-
-    sub = pd.DataFrame(
-        {column: np.zeros(100, dtype=np.int32) if column != 'Проект' else np.arange(100, dtype=np.int32) for column in SUBMISSION_COLUMNS}
-    )
+    sub = pd.DataFrame(df_dict)
     sub.to_csv(args.output_dir / 'submission.csv', index=False)
 
 def main(args):
