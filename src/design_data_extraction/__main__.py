@@ -10,11 +10,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from settings import (
+from .settings import (
     PATTERNS,
     SUBMISSION_COLUMNS
 )
-from utils import (
+from .utils import (
     get_frequent_values,
     get_data_from_docx,
     get_text_from_docx
