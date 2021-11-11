@@ -10,13 +10,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .calculate_f1_public import calculate_f1
-from .settings import (
+from calculate_f1_public import calculate_f1
+from settings import (
     MOST_FREQUENT_VALUES,
     PATTERNS,
     SUBMISSION_COLUMNS
 )
-from .utils import (
+from utils import (
     get_data_from_docx,
     get_text_from_docx
 )
@@ -47,6 +47,7 @@ def get_prediction(dir_path):
     df_dict = {
         column: [] for column in SUBMISSION_COLUMNS
     }
+    raise Exception(os.listdir(dir_path))
     with os.scandir(dir_path) as td:
         for entry in td:
             if entry.is_dir():
@@ -65,18 +66,17 @@ def get_prediction(dir_path):
                     if data_item is not None:
                         data_items.append(data_item)
                 data_items = set(data_items)
-                # if len(data_items) > 0:
-                #     for bush in set(data_items):
-                #         df_dict['Проект'].append(entry.name)
-                #         df_dict['Куст'].append(bush)
-                #         for column in SUBMISSION_COLUMNS[2:]:
-                #             df_dict[column].append(MOST_FREQUENT_VALUES[column])
-                # else:
-                df_dict['Проект'].append(entry.name)
-                df_dict['Куст'].append(np.NaN)
-                for column in SUBMISSION_COLUMNS[2:]:
-                    # df_dict[column].append(MOST_FREQUENT_VALUES[column])
-                    df_dict[column].append(np.NaN)
+                if len(data_items) > 0:
+                    for bush in set(data_items):
+                        df_dict['Проект'].append(entry.name)
+                        df_dict['Куст'].append(bush)
+                        for column in SUBMISSION_COLUMNS[2:]:
+                            df_dict[column].append(MOST_FREQUENT_VALUES[column])
+                else:
+                    df_dict['Проект'].append(entry.name)
+                    df_dict['Куст'].append(np.NaN)
+                    for column in SUBMISSION_COLUMNS[2:]:
+                        df_dict[column].append(MOST_FREQUENT_VALUES[column])
     return pd.DataFrame(df_dict)
 
 
