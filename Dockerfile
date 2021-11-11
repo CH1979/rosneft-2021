@@ -10,4 +10,4 @@ WORKDIR /app/src
 
 ENTRYPOINT ["python", "-m", "design_data_extraction"]
 
-CMD ["--mode=predict", "--data-dir=/input", "--output-dir=/result"]
+CMD ["--mode=predict", "--data-dir=/data", "--output-dir=/result"]
