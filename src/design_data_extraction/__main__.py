@@ -10,13 +10,13 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from calculate_f1_public import calculate_f1
-from settings import (
+from .calculate_f1_public import calculate_f1
+from .settings import (
     MOST_FREQUENT_VALUES,
     PATTERNS,
     SUBMISSION_COLUMNS
 )
-from utils import (
+from .utils import (
     get_data_from_docx,
     get_text_from_docx
 )
