@@ -1,6 +1,8 @@
 '''
 Файл содержит настройки проекта
 '''
+import re
+
 import numpy as np
 
 
@@ -34,9 +36,10 @@ SUBMISSION_COLUMNS = [
 ]
 
 PATTERNS = {
-    'Куст': [
-        r'куст № \d+'
-    ]
+    'Куст': re.compile(
+        r'куст\s*№\s*\d+|кустовая\s*площадка\s*№\s*\d+|'
+        r'куст\s*скважин\s*№\s*\d+'
+    )
 }
 
 MOST_FREQUENT_VALUES = {

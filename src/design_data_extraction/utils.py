@@ -20,26 +20,21 @@ def get_data_from_docx(file):
                             is_bush = False
                             f.close()
                             return cell.text
-        except IndexError:
-            print('KeyError')
+        except IndexError as e:
+            print(e)
             print(file.name)
         f.close()
         return None
-    except KeyError:
-        print('KeyError')
+    except KeyError as e:
+        print(e)
         print(file.name)
+        return None
 
 def get_text_from_docx(file):
     text = None
     try:
         text = docx2txt.process(file)
-    except FileNotFoundError:
-        print(file.name)
-        print('Файл не найден')
-    except BadZipFile:
-        print('BadZipFile')
-        print(file.name)
-    except KeyError:
-        print('KeyError')
+    except (FileNotFoundError, BadZipFile, KeyError) as e:
+        print(e)
         print(file.name)
     return text

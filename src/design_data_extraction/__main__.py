@@ -47,7 +47,6 @@ def get_prediction(dir_path):
     df_dict = {
         column: [] for column in SUBMISSION_COLUMNS
     }
-    raise Exception(os.listdir(dir_path))
     with os.scandir(dir_path) as td:
         for entry in td:
             if entry.is_dir():
@@ -55,13 +54,13 @@ def get_prediction(dir_path):
                 for document in os.scandir(entry.path):
                     text = get_text_from_docx(document)
                     if text is not None:
-                        for pattern in PATTERNS['Куст']:
-                            samples = re.findall(
-                                pattern=pattern,
-                                string=text.lower()
-                            )
-                            for sample in set(samples):
-                                data_items.extend(re.findall(r'\d+.\d+', sample))
+                        text = text.lower()
+                        samples = re.findall(
+                            pattern=PATTERNS['Куст'],
+                            string=text
+                        )
+                        for sample in set(samples):
+                            data_items.extend(re.findall(r'\d+|\d+\.\d+', sample))
                     data_item = get_data_from_docx(document)
                     if data_item is not None:
                         data_items.append(data_item)
