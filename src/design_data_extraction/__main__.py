@@ -73,7 +73,7 @@ def get_prediction(dir_path):
                             df_dict[column].append(MOST_FREQUENT_VALUES[column])
                 else:
                     df_dict['Проект'].append(entry.name)
-                    df_dict['Куст'].append(np.NaN)
+                    df_dict['Куст'].append(' ')
                     for column in SUBMISSION_COLUMNS[2:]:
                         df_dict[column].append(MOST_FREQUENT_VALUES[column])
     return pd.DataFrame(df_dict)
