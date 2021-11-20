@@ -77,5 +77,6 @@ def calculate_f1(test_csv, preds_csv):
             f1 = 2 * (precision * recall) / (precision + recall)
         else:
             f1 = 0
+        print(f'{column}: {f1:.4f}')
         f1_for_each_column.append(f1)
     return np.array(f1_for_each_column).mean()

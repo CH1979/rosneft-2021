@@ -35,11 +35,37 @@ SUBMISSION_COLUMNS = [
     'Потребляемая мощность ЭЦН / ШГН, кВт'
 ]
 
-PATTERNS = {
-    'Куст': re.compile(
-        r'куст\s*№\s*\d+|кустовая\s*площадка\s*№\s*\d+|'
-        r'куст\s*скважин\s*№\s*\d+'
-    )
+TEXT_PATTERNS = {
+    'Куст': {
+        'phrase_pattern': re.compile(
+            r'куст\s*№\s*\d+|кустовая\s*площадка\s*№\s*\d+|'
+            r'куст\s*скважин\s*№\s*\d+'
+        ),
+        'target_pattern': re.compile(
+            r'[\d\.]+'
+        ),
+        'table_pattern': 'Куст скважин',
+    },
+    'Абсолютный минимум температуры': {
+        'phrase_pattern': re.compile(
+            r'абсолютный минимум.{0,70}c|абсолютная минимальная температура{0,70}с'
+        ),
+        'target_pattern': re.compile(
+            r'[\d\.]+'
+        )
+    },
+    'Абсолютный максимум температуры': {
+        'phrase_pattern': re.compile(
+            r'абсолютный максимум.{0,70}с|абсолютная максимальная температура{0,70}с'
+        ),
+        'target_pattern': re.compile(
+            r'[\d\.]+'
+        )
+    },
+}
+
+TABLE_PATTERNS = {
+    'Куст': 'Куст скважин'
 }
 
 MOST_FREQUENT_VALUES = {
