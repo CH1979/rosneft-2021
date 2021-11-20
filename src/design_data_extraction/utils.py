@@ -4,8 +4,8 @@ from collections import defaultdict
 from zipfile import BadZipFile
 
 import docx
+import docx2txt
 import pandas as pd
-import pypandoc
 
 from .settings import (
     MOST_FREQUENT_VALUES,
@@ -18,11 +18,7 @@ from .settings import (
 def get_text_from_docx(file):
     text = None
     try:
-        text = pypandoc.convert_file(
-            file,
-            to='plain',
-            extra_args=['--wrap=none']
-        )
+        text = docx2txt.process(file)
     except (FileNotFoundError, BadZipFile, KeyError, RuntimeError) as e:
         print(e)
         print(file)
