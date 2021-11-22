@@ -1,3 +1,6 @@
+'''
+Вспомогательные утилиты и функции
+'''
 import os
 import re
 from collections import defaultdict
@@ -16,6 +19,9 @@ from .settings import (
 
 
 def get_text_from_docx(file):
+    '''
+    Конвертация документа Word в строку
+    '''
     text = None
     try:
         text = docx2txt.process(file)
@@ -25,6 +31,9 @@ def get_text_from_docx(file):
     return text
 
 def convert_table_to_df(table):
+    '''
+    Преобразование таблицы из документа Word в Pandas dataframe
+    '''
     try:
         data = []
 
@@ -45,6 +54,9 @@ def convert_table_to_df(table):
         return None
 
 def extract_target_from_text(text, phrase_pattern, target_pattern):
+    '''
+    Извлечение целевой информации из текстовой строки
+    '''
     match = re.search(phrase_pattern, text)
     if match:
         target = re.search(target_pattern, match.group())
@@ -56,6 +68,9 @@ def extract_target_from_text(text, phrase_pattern, target_pattern):
         return None
 
 def get_data_from_docx(file, pattern):
+    '''
+    Поиск в табличных данных
+    '''
     try:
         f = open(file, 'rb')
         document = docx.Document(f)
@@ -73,6 +88,9 @@ def get_data_from_docx(file, pattern):
         return None
 
 def predict_partially(project):
+    '''
+    Формирование результата для одного проекта
+    '''
     df_dict = {
         column: [] for column in SUBMISSION_COLUMNS
     }
@@ -103,6 +121,15 @@ def predict_partially(project):
                         TEXT_PATTERNS[target]['phrase_pattern'],
                         TEXT_PATTERNS[target]['target_pattern']
                     )
+                    if (value is not None) and (',' in value):
+                        value = value.replace(',', '.')
+                    neg = [
+                        'Абсолютный минимум температуры',
+                        'Средняя температура наиболее холодной пятидневки',
+                        'Среднемесячная температура самого холодного месяца'
+                    ]
+                    if (target in neg) and (value is not None):
+                        value = '-' + value
                     values[target].append(value)
 
         # Извлечение данных из таблиц
@@ -124,13 +151,10 @@ def predict_partially(project):
             print(e)
             print(document.name)
 
-
     for target in TEXT_PATTERNS.keys():
         values[target] = [x for x in values[target] if x is not None]
         if len(values[target]) > 0:
             values[target] = values[target][0]
-            if target == 'Абсолютный минимум температуры':
-                values[target] = - int(values[target])
         else:
             values[target] = None
 
